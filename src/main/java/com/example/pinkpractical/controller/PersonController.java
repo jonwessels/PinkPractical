@@ -27,8 +27,8 @@ public class PersonController
     @Autowired
     CsvGenerator csvGenerator;
 
-    @GetMapping(value = "/partner_and_children", produces = "text/csv")
-    public void findWherePartnerAndThreeChildren(HttpServletResponse response)
+    @GetMapping(value = "/partner_and_children")
+    public String findWherePartnerAndThreeChildren()
     {
         List<PersonEntity> filterList = new ArrayList<>();
 
@@ -42,16 +42,14 @@ public class PersonController
             }
         }
 
-        response.setContentType("text/csv");
-        response.addHeader("Content-Disposition", "attachment; filename=\"persons.csv\"");
-
         try
         {
-            csvGenerator.writePersonsToCsv(filterList, response.getWriter());
+            return csvGenerator.csvEncode(filterList);
         }
         catch(IOException e)
         {
             e.printStackTrace();
+            return null;
         }
     }
 }

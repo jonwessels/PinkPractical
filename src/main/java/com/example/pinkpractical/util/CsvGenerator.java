@@ -6,30 +6,30 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.StringWriter;
+import java.util.Base64;
 import java.util.List;
 
 @Component
 public class CsvGenerator
 {
-    public void writePersonsToCsv(List<PersonEntity> persons, Writer writer)
-    {
-        try
-        {
-            CSVPrinter printer =  new CSVPrinter(writer, CSVFormat.DEFAULT);
 
-            //Writing headers, excluding children
-            printer.printRecord("ID", "Name", "Birth Date", "Parent 1 ID", "Parent 2 ID", "Partner ID");
-            for(PersonEntity person : persons)
-            {
-                printer.printRecord(person.getId(),person.getName(),
-                        person.getBirthDate(),person.getParent1().getId(),
-                        person.getParent2().getId(),person.getPartner().getId());
-            }
-        }
-        catch (IOException e)
+    final String[] HEADERS = { "ID", "Name", "Birth Date", "Parent 1 ID", "Parent 2 ID", "Partner ID"};
+
+    public String csvEncode(List<PersonEntity> persons) throws IOException
+    {
+        StringWriter sw =  new StringWriter();
+        CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(HEADERS).build();
+
+        final CSVPrinter printer = new CSVPrinter(sw, csvFormat);
+
+        for(PersonEntity person : persons)
         {
-            e.printStackTrace();
+            printer.printRecord(person.getId(),person.getName(),
+                    person.getBirthDate(),person.getParent1().getId(),
+                    person.getParent2().getId(),person.getPartner().getId());
         }
+
+        return Base64.getEncoder().encodeToString(sw.toString().getBytes());
     }
 }
