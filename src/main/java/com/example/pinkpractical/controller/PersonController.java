@@ -3,11 +3,14 @@ package com.example.pinkpractical.controller;
 import com.example.pinkpractical.entity.PersonEntity;
 import com.example.pinkpractical.repository.PersonRepository;
 import com.example.pinkpractical.util.ChildChecker;
+import com.example.pinkpractical.util.CsvGenerator;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +24,13 @@ public class PersonController
     @Autowired
     ChildChecker childChecker;
 
-    @GetMapping("/partner_and_children")
-    public List<PersonEntity> findWherePartnerAndThreeChildren()
+    @Autowired
+    CsvGenerator csvGenerator;
+
+    @GetMapping(value = "/partner_and_children", produces = "text/csv")
+    public void findWherePartnerAndThreeChildren(HttpServletResponse response)
     {
-        List<PersonEntity> returnList = new ArrayList<>();
+        List<PersonEntity> filterList = new ArrayList<>();
 
         for(PersonEntity person : personRepository.findAll())
         {
@@ -32,10 +38,20 @@ public class PersonController
             if(childChecker.childrenWithCurrentPartner(person) == 3 //# of children should be variable input
                     && childChecker.hasChildUnder18WithPartner(person))
             {
-                returnList.add(person);
+                filterList.add(person);
             }
         }
 
-        return returnList;
+        response.setContentType("text/csv");
+        response.addHeader("Content-Disposition", "attachment; filename=\"persons.csv\"");
+
+        try
+        {
+            csvGenerator.writePersonsToCsv(filterList, response.getWriter());
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }
