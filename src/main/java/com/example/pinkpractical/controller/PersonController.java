@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/person")
@@ -53,7 +54,8 @@ public class PersonController
     }
 
     @PostMapping
-    public ResponseEntity<PersonEntity> createPerson(@RequestBody PersonEntity person) {
+    public ResponseEntity<PersonEntity> createPerson(@RequestBody PersonEntity person)
+    {
         try
         {
             PersonEntity newPerson = personRepository.save(new PersonEntity(person));
@@ -62,6 +64,40 @@ public class PersonController
         catch (Exception e)
         {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PersonEntity> updatePerson(@PathVariable("id") long id,@RequestBody PersonEntity person)
+    {
+        Optional<PersonEntity> personData = personRepository.findById(id);
+
+        //Assuming parents won't change
+        if(personData.isPresent())
+        {
+            PersonEntity updatePerson = personData.get();
+            updatePerson.setName(person.getName());
+            updatePerson.setBirthDate(person.getBirthDate());
+            updatePerson.setPartner(person.getPartner());
+
+            return new ResponseEntity<>(personRepository.save(updatePerson), HttpStatus.OK);
+        }
+        else
+        {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deletePerson(@PathVariable("id") long id) {
+        try
+        {
+            personRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        catch (Exception e)
+        {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
