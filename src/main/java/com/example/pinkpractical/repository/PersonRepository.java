@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-//Mapping will go to /ersonEntites/search for now
+//Mapping will go to /personEntites/search for now
 public interface PersonRepository extends JpaRepository<PersonEntity, Long>
 {
     List<PersonEntity> findByOrderByName();
