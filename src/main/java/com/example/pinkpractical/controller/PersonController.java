@@ -33,10 +33,22 @@ public class PersonController
         for(PersonEntity person : personRepository.findAll())
         {
             //Won't check if current partner, as child count will be 0 if no partner
-            if(childChecker.childrenWithCurrentPartner(person) == 3)
+            if(childChecker.childrenWithCurrentPartner(person) == 3) //# of children should be variable input
             {
-
+                //Check if one of the children is under 18
+                for(PersonEntity child : person.getChildren())
+                {
+                    if(ageChecker.currentAge(child) < 18) //Age should be variable input
+                    {
+                        if(returnList.contains(person))
+                        {
+                            returnList.add(person);
+                        }
+                    }
+                }
             }
         }
+
+        return returnList;
     }
 }
