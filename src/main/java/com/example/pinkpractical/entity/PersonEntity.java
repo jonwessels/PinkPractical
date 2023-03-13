@@ -42,4 +42,13 @@ public class PersonEntity
     @ManyToOne
     @JoinColumn(name = "partner_id")
     private PersonEntity partner;
+
+    public PersonEntity(PersonEntity _person)
+    {
+        this.name = _person.getName();
+        this.birthDate = _person.getBirthDate();
+        this.parent1 = _person.getParent1();
+        this.parent2 = _person.getParent2();
+        this.partner = _person.getPartner();
+    }
 }
