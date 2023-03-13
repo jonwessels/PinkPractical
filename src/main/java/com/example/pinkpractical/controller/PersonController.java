@@ -28,7 +28,7 @@ public class PersonController
     CsvGenerator csvGenerator;
 
     @GetMapping(value = "/partner_and_children")
-    public String findWherePartnerAndThreeChildren()
+    public ResponseEntity<String> findWherePartnerAndThreeChildren()
     {
         List<PersonEntity> filterList = new ArrayList<>();
 
@@ -44,12 +44,13 @@ public class PersonController
 
         try
         {
-            return csvGenerator.csvEncode(filterList);
+            String encodedCsv = csvGenerator.csvEncode(filterList);
+            return new ResponseEntity<>(encodedCsv, HttpStatus.OK);
         }
         catch(IOException e)
         {
             e.printStackTrace();
-            return null;
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -88,6 +89,7 @@ public class PersonController
         }
     }
 
+    //Delete can cause issues as checks aren't done for relations like parents & children
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deletePerson(@PathVariable("id") long id) {
         try
