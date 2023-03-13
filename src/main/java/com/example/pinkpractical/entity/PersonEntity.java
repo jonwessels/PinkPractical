@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class PersonEntity
     private String name;
 
     @Column(name = "birth_date", nullable = false)
-    private Time birthDate;
+    private LocalDate birthDate;
 
     @ManyToOne
     @JoinColumn(name = "parent_1_id",nullable = false)
