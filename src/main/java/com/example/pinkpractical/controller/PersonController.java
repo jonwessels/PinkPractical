@@ -102,4 +102,16 @@ public class PersonController
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping(value = "/order_by_name")
+    public ResponseEntity<List<PersonEntity>> findAllOrderByName()
+    {
+        return new ResponseEntity<>(personRepository.findByOrderByNameAsc(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/order_by_id")
+    public ResponseEntity<List<PersonEntity>> findAllOrderById()
+    {
+        return new ResponseEntity<>(personRepository.findByOrderByIdAsc(), HttpStatus.OK);
+    }
 }
